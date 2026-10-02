@@ -1,0 +1,68 @@
+{
+  "projects": [
+    {
+      "id": "atlas-auth",
+      "name": "Atlas Authentication Refresh",
+      "owner": "Maya Chen",
+      "status": "on-track",
+      "recentActivity": "Merged PR #142: new auth flow",
+      "priority": "high"
+    },
+    {
+      "id": "billing-ledger",
+      "name": "Billing Ledger Reconciliation",
+      "owner": "Owen Patel",
+      "status": "at-risk",
+      "recentActivity": "Finance QA found three rounding edge cases",
+      "priority": "high"
+    },
+    {
+      "id": "mobile-onboarding",
+      "name": "Mobile Onboarding Cleanup",
+      "owner": "Lena Alvarez",
+      "status": "complete",
+      "recentActivity": "Release notes approved this morning",
+      "priority": "medium"
+    },
+    {
+      "id": "warehouse-sync",
+      "name": "Warehouse Sync Reliability",
+      "owner": "Noah Williams",
+      "status": "blocked",
+      "recentActivity": "Waiting on vendor credentials for staging",
+      "priority": "high"
+    },
+    {
+      "id": "support-insights",
+      "name": "Support Insights Dashboard",
+      "owner": "Priya Singh",
+      "status": "on-track",
+      "recentActivity": "Design review completed yesterday",
+      "priority": "medium"
+    },
+    {
+      "id": "search-tuning",
+      "name": "Search Relevance Tuning",
+      "owner": "Ethan Brooks",
+      "status": "at-risk",
+      "recentActivity": "A/B test sample size is below target",
+      "priority": "medium"
+    },
+    {
+      "id": "docs-refresh",
+      "name": "Developer Docs Refresh",
+      "owner": "Ari Kim",
+      "status": "complete",
+      "recentActivity": "Published updated quickstart guide",
+      "priority": "low"
+    },
+    {
+      "id": "incident-drills",
+      "name": "Quarterly Incident Drill Program",
+      "owner": "Sam Rivera",
+      "status": "on-track",
+      "recentActivity": "Runbook walkthrough scheduled for Friday",
+      "priority": "low"
+    }
+  ]
+}

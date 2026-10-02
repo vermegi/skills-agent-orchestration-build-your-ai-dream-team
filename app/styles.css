@@ -1,0 +1,369 @@
+/* ==========================================================================
+   Project Pulse — Dashboard Stylesheet
+   ==========================================================================
+
+   CLASS-NAME CONTRACT (for Coder / markup authors)
+   --------------------------------------------------------------------------
+   .dashboard                     Page-level container, sets background + max width
+   .dashboard-header              Header region: title + subtitle
+   .dashboard-title                "Project Pulse" heading
+   (optional) .dashboard-subtitle  Secondary descriptive line under the title
+
+   .project-list                  Responsive CSS grid of project cards
+
+   .project-card                  Elevated card surface for a single project
+   .project-card__title            Project name (ellipsis on overflow)
+   .project-card__owner            Owner / team attribution line
+   .project-card__meta             Row for pills (status + priority) and dates
+   .project-card__activity         Footer / recent-activity text area
+
+   .status-pill                   Base pill for project status
+   .status-pill--on-track           Green — healthy / on schedule
+   .status-pill--at-risk            Amber — needs attention
+   .status-pill--blocked            Red — stalled / blocked
+   .status-pill--complete           Neutral blue — finished
+   .status-pill--unknown            Neutral gray — fallback / no data
+
+   .priority-pill                  Base pill for project priority
+   .priority-pill--high              Red-orange — urgent
+   .priority-pill--medium             Amber — normal
+   .priority-pill--low                 Muted/neutral — low urgency
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Design tokens
+   -------------------------------------------------------------------------- */
+:root {
+  /* Color — surfaces & text */
+  --color-surface: #f4f6fb;
+  --color-surface-elevated: #ffffff;
+  --color-text-primary: #1a2233;
+  --color-text-muted: #5b6678;
+  --color-border: #e2e6ef;
+  --color-accent: #3858e9;
+  --color-accent-soft: #e8ecfe;
+
+  /* Color — status */
+  --color-status-on-track-bg: #e4f7ec;
+  --color-status-on-track-fg: #0c6b37;
+  --color-status-on-track-dot: #22a35c;
+
+  --color-status-at-risk-bg: #fff4e0;
+  --color-status-at-risk-fg: #8a5a07;
+  --color-status-at-risk-dot: #e0a21b;
+
+  --color-status-blocked-bg: #fde8e8;
+  --color-status-blocked-fg: #9c1c1c;
+  --color-status-blocked-dot: #d8372f;
+
+  --color-status-complete-bg: #e6eefc;
+  --color-status-complete-fg: #1f4a97;
+  --color-status-complete-dot: #3b6fd1;
+
+  --color-status-unknown-bg: #eef0f3;
+  --color-status-unknown-fg: #4b5563;
+  --color-status-unknown-dot: #8b93a1;
+
+  /* Color — priority */
+  --color-priority-high-bg: #fde6e1;
+  --color-priority-high-fg: #a3320f;
+
+  --color-priority-medium-bg: #fff2d9;
+  --color-priority-medium-fg: #8a5a07;
+
+  --color-priority-low-bg: #eef0f3;
+  --color-priority-low-fg: #525a69;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+
+  /* Type scale */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.875rem;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(23, 31, 56, 0.06);
+  --shadow-md: 0 4px 12px rgba(23, 31, 56, 0.08);
+  --shadow-lg: 0 12px 28px rgba(23, 31, 56, 0.16);
+
+  /* Motion */
+  --transition-fast: 150ms ease;
+  --transition-base: 220ms ease;
+}
+
+/* --------------------------------------------------------------------------
+   Reset & base
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background: linear-gradient(180deg, #eef1fa 0%, #f6f7fb 55%, #f7f8fc 100%);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+/* Visible, accessible focus state for keyboard users */
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard shell
+   -------------------------------------------------------------------------- */
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5) var(--space-8);
+}
+
+.dashboard-header {
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+.dashboard-subtitle {
+  margin-top: var(--space-2);
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Project list — responsive grid
+   -------------------------------------------------------------------------- */
+.project-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 600px) {
+  .project-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  .project-list {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Project card
+   -------------------------------------------------------------------------- */
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  min-width: 0; /* allow ellipsis children to shrink properly in grid */
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.project-card:hover,
+.project-card:focus-within {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.project-card__title {
+  font-size: var(--text-lg);
+  font-weight: 650;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-card__owner {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.project-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.project-card__activity {
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Pills — shared base
+   -------------------------------------------------------------------------- */
+.status-pill,
+.priority-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 650;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+/* Status dot indicator */
+.status-pill::before {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+/* --------------------------------------------------------------------------
+   Status pill modifiers (WCAG AA contrast on light backgrounds)
+   -------------------------------------------------------------------------- */
+.status-pill--on-track {
+  background: var(--color-status-on-track-bg);
+  color: var(--color-status-on-track-fg);
+}
+.status-pill--on-track::before {
+  color: var(--color-status-on-track-dot);
+}
+
+.status-pill--at-risk {
+  background: var(--color-status-at-risk-bg);
+  color: var(--color-status-at-risk-fg);
+}
+.status-pill--at-risk::before {
+  color: var(--color-status-at-risk-dot);
+}
+
+.status-pill--blocked {
+  background: var(--color-status-blocked-bg);
+  color: var(--color-status-blocked-fg);
+}
+.status-pill--blocked::before {
+  color: var(--color-status-blocked-dot);
+}
+
+.status-pill--complete {
+  background: var(--color-status-complete-bg);
+  color: var(--color-status-complete-fg);
+}
+.status-pill--complete::before {
+  color: var(--color-status-complete-dot);
+}
+
+.status-pill--unknown {
+  background: var(--color-status-unknown-bg);
+  color: var(--color-status-unknown-fg);
+}
+.status-pill--unknown::before {
+  color: var(--color-status-unknown-dot);
+}
+
+/* --------------------------------------------------------------------------
+   Priority pill modifiers
+   -------------------------------------------------------------------------- */
+.priority-pill--high {
+  background: var(--color-priority-high-bg);
+  color: var(--color-priority-high-fg);
+}
+
+.priority-pill--medium {
+  background: var(--color-priority-medium-bg);
+  color: var(--color-priority-medium-fg);
+}
+
+.priority-pill--low {
+  background: var(--color-priority-low-bg);
+  color: var(--color-priority-low-fg);
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .project-card {
+    transition: none;
+  }
+  .project-card:hover,
+  .project-card:focus-within {
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Small-screen refinements
+   -------------------------------------------------------------------------- */
+@media (max-width: 420px) {
+  .dashboard {
+    padding: var(--space-5) var(--space-3) var(--space-6);
+  }
+
+  .dashboard-title {
+    font-size: var(--text-xl);
+  }
+
+  .project-card {
+    padding: var(--space-4);
+  }
+}

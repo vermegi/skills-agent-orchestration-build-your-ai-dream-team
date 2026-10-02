@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module">
+      const projectList = document.querySelector("#project-list");
+      const projectCardTemplate = document.querySelector("#project-card-template");
+
+      const statusLabels = {
+        "on-track": "On track",
+        "at-risk": "At risk",
+        blocked: "Blocked",
+        complete: "Complete"
+      };
+
+      const priorityLabels = {
+        high: "High priority",
+        medium: "Medium priority",
+        low: "Low priority"
+      };
+
+      function createMessage(message, tone = "info") {
+        const item = document.createElement("li");
+        item.className = `project-list__message project-list__message--${tone}`;
+        item.textContent = message;
+        return item;
+      }
+
+      function normalizeStatus(status) {
+        return Object.hasOwn(statusLabels, status) ? status : "unknown";
+      }
+
+      function normalizePriority(priority) {
+        return Object.hasOwn(priorityLabels, priority) ? priority : "medium";
+      }
+
+      function renderProject(project) {
+        const fragment = projectCardTemplate.content.cloneNode(true);
+        const card = fragment.querySelector(".project-card");
+        const title = fragment.querySelector(".project-card__title");
+        const owner = fragment.querySelector(".project-card__owner");
+        const statusPill = fragment.querySelector(".status-pill");
+        const priorityPill = fragment.querySelector(".priority-pill");
+        const activity = fragment.querySelector(".project-card__activity");
+
+        const status = normalizeStatus(project.status);
+        const priority = normalizePriority(project.priority);
+
+        title.textContent = project.name || "Untitled project";
+        owner.textContent = project.owner ? `Owner: ${project.owner}` : "Owner: Unassigned";
+        activity.textContent = project.recentActivity || "No recent activity available.";
+
+        statusPill.classList.add(`status-pill--${status}`);
+        statusPill.textContent = status === "unknown" ? "Unknown" : statusLabels[status];
+
+        priorityPill.classList.add(`priority-pill--${priority}`);
+        priorityPill.textContent = priorityLabels[priority];
+
+        card.setAttribute("aria-label", `${title.textContent}, ${statusPill.textContent}, ${priorityPill.textContent}`);
+
+        return fragment;
+      }
+
+      function renderMessage(message, tone) {
+        projectList.replaceChildren(createMessage(message, tone));
+      }
+
+      async function loadProjects() {
+        try {
+          const response = await fetch("./project-data.json");
+
+          if (!response.ok) {
+            throw new Error(`Project data request failed with status ${response.status}`);
+          }
+
+          const data = await response.json();
+          const projects = Array.isArray(data.projects) ? data.projects : [];
+
+          if (projects.length === 0) {
+            renderMessage("No projects are available yet. Add projects to project-data.json to populate the dashboard.", "empty");
+            return;
+          }
+
+          const renderedProjects = document.createDocumentFragment();
+          projects.forEach((project) => {
+            renderedProjects.append(renderProject(project));
+          });
+
+          projectList.replaceChildren(renderedProjects);
+        } catch (error) {
+          console.error("Unable to load Project Pulse data:", error);
+          renderMessage("We could not load the project dashboard data. Please check project-data.json and refresh the page.", "error");
+        }
+      }
+
+      loadProjects();
+    </script>
+  </head>
+  <body>
+    <main class="dashboard" aria-labelledby="dashboard-title">
+      <header class="dashboard-header">
+        <p class="dashboard-eyebrow">Team delivery snapshot</p>
+        <h1 class="dashboard-title" id="dashboard-title">Project Pulse</h1>
+        <p class="dashboard-intro">Track current project health, ownership, priority, and the latest movement across the portfolio.</p>
+      </header>
+
+      <noscript>
+        <p class="dashboard-message">JavaScript is required to load and display the Project Pulse dashboard.</p>
+      </noscript>
+
+      <section class="dashboard-section" aria-labelledby="project-list-heading">
+        <h2 class="dashboard-section__title" id="project-list-heading">Current projects</h2>
+        <ul class="project-list" id="project-list" role="list" aria-live="polite">
+          <li class="project-list__message project-list__message--loading">Loading project updates…</li>
+        </ul>
+      </section>
+
+      <template id="project-card-template">
+        <li class="project-card">
+          <article class="project-card__content">
+            <h3 class="project-card__title"></h3>
+            <p class="project-card__owner"></p>
+            <div class="project-card__meta">
+              <span class="status-pill"></span>
+              <span class="priority-pill"></span>
+            </div>
+            <p class="project-card__activity"></p>
+          </article>
+        </li>
+      </template>
+    </main>
+  </body>
+</html>
